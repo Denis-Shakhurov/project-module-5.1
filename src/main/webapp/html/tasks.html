@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Home Page</title>
+</head>
+<body>
+<h1>Tasks</h1>
+<h2>View tasks</h2>
+<p th:text="${hello}"></p>
+<table>
+    <thead>
+    <tr>
+        <th>id</th>
+        <th>description</th>
+        <th>status</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="t: ${tasks}">
+        <td th:text="${t.id}"></td>
+        <td th:text="${t.description}"></td>
+        <td th:text="${t.status}"></td>
+    </tr>
+    </tbody>
+</table>
+<h2>Add a task</h2>
+<form action="/tasks" method="POST">
+    Name: <input type="text" name="name"><br />
+    Price: <input type="number" step="any" name="price"><br />
+    <button type="submit">Add product</button>
+</form>
+</body>
+</html>
