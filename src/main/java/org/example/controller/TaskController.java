@@ -5,11 +5,13 @@ import org.example.model.Task;
 import org.example.service.TaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Controller
 @RequestMapping("/")
@@ -23,25 +25,33 @@ public class TaskController {
     }
 
     @GetMapping("/")
+    @ResponseStatus(HttpStatus.OK)
     public String tasks(Model model,
                             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-                            @RequestParam(value = "limit", required = false, defaultValue = "1") int limit) {
+                            @RequestParam(value = "limit", required = false, defaultValue = "10") int limit) {
         List<Task> tasks = taskService.findAll((page - 1) * limit, limit);
         logger.info("tasks count: {}", tasks.size());
         model.addAttribute("tasks", tasks);
-        String hello = "Hello World";
-        model.addAttribute("hello", hello);
+        model.addAttribute("currentPage", page);
+        int totalPages = (int) Math.ceil((1.0 * taskService.getAllCount()) / limit);
+        if (totalPages > 1) {
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
+                    .boxed()
+                    .toList();
+            model.addAttribute("pageNumbers", pageNumbers);
+        }
         return "tasks";
     }
 
-//    @GetMapping("{id}")
-//    public Task getTask(@PathVariable Long id, Model model) {
-//        Task task = taskService.findById(id);
-//        model.addAttribute("task", task);
-//        return task;
-//    }
+    @GetMapping("/count")
+    public String count(Model model) {
+        int count = taskService.getAllCount();
+        model.addAttribute("count", count);
+        return tasks(model, 1, 10);
+    }
 
     @PostMapping("/")
+    @ResponseStatus(HttpStatus.CREATED)
     public String create(@RequestBody TaskInfo task, Model model) {
         Task newTask = new Task();
         newTask.setDescription(task.getDescription());
@@ -50,27 +60,31 @@ public class TaskController {
         taskService.create(newTask);
 
         model.addAttribute("task", newTask);
-        return "redirect:/tasks/";
+        return tasks(model, 1, 10);
     }
 
     @PostMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public String update(@RequestBody TaskInfo task,
-                       @PathVariable Long id,
+                       @PathVariable("id") Integer id,
                        Model model) {
         Task newTask = new Task();
         newTask.setDescription(task.getDescription());
         newTask.setStatus(task.getStatus());
-        newTask.setId(id.intValue());
+        newTask.setId(id);
 
         taskService.update(newTask);
 
         model.addAttribute("task", newTask);
-        return "redirect:/tasks/";
+        return tasks(model, 1, 10);
     }
 
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable Long id) {
-        taskService.delete(id);
-        return "redirect:/tasks/";
+    @ResponseStatus(HttpStatus.OK)
+    public String delete(Model model, @PathVariable("id") Integer id) {
+        if (id != null) {
+            taskService.delete(id);
+        }
+        return tasks(model, 1, 10);
     }
 }

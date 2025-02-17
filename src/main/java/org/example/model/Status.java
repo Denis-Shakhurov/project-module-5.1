@@ -5,7 +5,11 @@ public enum Status {
     DONE,
     PAUSED;
 
-    int getValue(Status status) {
-        return status.getValue(status);
+    public Status getValue(int status) {
+        return Status.values()[status];
+    }
+
+    public int getValue(Status status) {
+        return status.ordinal();
     }
 }

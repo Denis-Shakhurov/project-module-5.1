@@ -17,10 +17,10 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(length = 100, nullable = false)
+    @Column(name = "description", length = 100, nullable = false)
     private String description;
 
-    @Column(nullable = false)
+    @Column(name = "status", nullable = false, columnDefinition = "int")
     @Enumerated(EnumType.ORDINAL)
     private Status status;
 

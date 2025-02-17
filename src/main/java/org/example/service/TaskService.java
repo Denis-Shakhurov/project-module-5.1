@@ -20,8 +20,8 @@ public class TaskService {
         return taskDAO.findAll(page, size);
     }
 
-    public Task findById(Long id) {
-        return taskDAO.findById(id.intValue())
+    public Task findById(int id) {
+        return taskDAO.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
     }
 
@@ -29,31 +29,19 @@ public class TaskService {
         return taskDAO.getAllCount();
     }
 
-    public Task create(Task task) {
+    public void create(Task task) {
         if (task != null) {
-            taskDAO.updateOrSave(task);
+            taskDAO.save(task);
         }
-        return task;
     }
 
     @Transactional
-    public Task update(Task task) {
-        Task oldTask = taskDAO.findById(task.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
-        if (oldTask != null) {
-            oldTask.setDescription(task.getDescription());
-            oldTask.setStatus(task.getStatus());
-            taskDAO.updateOrSave(oldTask);
-        }
-        return oldTask;
+    public void update(Task task) {
+        taskDAO.update(task);
     }
 
     @Transactional
-    public void delete(Long id) {
-        Task task = taskDAO.findById(id.intValue())
-                        .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
-        if (task != null) {
-            taskDAO.deleteById(id.intValue());
-        }
+    public void delete(int id) {
+        taskDAO.findById(id).ifPresent(task -> taskDAO.deleteById(id));
     }
 }

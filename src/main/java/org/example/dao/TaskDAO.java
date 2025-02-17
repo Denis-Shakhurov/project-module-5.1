@@ -59,8 +59,20 @@ public class TaskDAO {
     }
 
     @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
+    public void update(Task task) {
+        getSession().update(task);
+    }
+
+    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
+    public void save(Task task) {
+        getSession().save(task);
+    }
+
+    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
     public void deleteById(int id) {
-        getSession().delete(findById(id));
+        findById(id).ifPresent(task -> {
+            getSession().remove(task);
+        });
     }
 
     private Session getSession() {
