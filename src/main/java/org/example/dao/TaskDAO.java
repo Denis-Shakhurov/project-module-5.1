@@ -53,22 +53,22 @@ public class TaskDAO {
         return Optional.of(query.uniqueResult());
     }
 
-    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
+    @Transactional()
     public void updateOrSave(Task task) {
         getSession().persist(task);
     }
 
-    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
+    @Transactional()
     public void update(Task task) {
         getSession().update(task);
     }
 
-    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
+    @Transactional()
     public void save(Task task) {
         getSession().save(task);
     }
 
-    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
+    @Transactional()
     public void deleteById(int id) {
         findById(id).ifPresent(task -> {
             getSession().remove(task);
